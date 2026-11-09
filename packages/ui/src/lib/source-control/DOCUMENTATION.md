@@ -1,3 +1,4 @@
+successfully downloaded text file (SHA: 0776fbe52d46e06563826b4ea4cffbee32c72602)
 # UI source control
 
 ## Repository binding authority
@@ -117,7 +118,9 @@ its host for an SSH remote, so a Gitea or Forgejo instance whose `SSH_DOMAIN`
 differs from its web address still serves its own repositories.
 Remote recognition compares the separate SSH address only with SSH remotes,
 using normalized hostname and SSH port. SCP, omitted port and explicit port 22
-have the same default-port identity. An HTTP(S) remote on an SSH-only host
+have the same default-port identity. An SSH remote on an instance without a
+separate SSH address matches by instance host regardless of SSH port, aligning
+with server-side remote recognition. An HTTP(S) remote on an SSH-only host
 produces neither a provider identity nor a repository link.
 `proposeIdentityForHost` proposes, among applicable identities,
 the one whose account answers for the remote host, then the default identity,

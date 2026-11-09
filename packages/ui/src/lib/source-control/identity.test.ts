@@ -1,3 +1,4 @@
+successfully downloaded text file (SHA: 809d1cc5f97eea71c8094d98ccf92371892c30c6)
 import { describe, expect, test } from 'bun:test';
 import type { GitRemote, SourceControlBindingRead, SourceControlIdentity } from '@/lib/api/types';
 import { gitIdentityProfileSchema, identityTransport } from '@/lib/api/git-identity';
@@ -69,6 +70,16 @@ describe('source-control identity resolution', () => {
   test('matches a known self-managed instance by remote host', () => {
     const identity = { provider: 'gitlab', instance: 'https://gitlab.example.com' } satisfies SourceControlIdentity;
     expect(resolveSourceControlIdentity(remote('ssh://git@gitlab.example.com/team/repo.git'), [identity])).toBe(identity);
+  });
+
+  test('matches a known self-managed instance by remote host with a custom SSH port', () => {
+    const identity = { provider: 'gitlab', instance: 'https://gitlab.example.com' } satisfies SourceControlIdentity;
+    expect(resolveSourceControlIdentity(remote('ssh://git@gitlab.example.com:2222/team/repo.git'), [identity])).toBe(identity);
+  });
+
+  test('matches a known self-managed instance by remote host with an explicit default SSH port', () => {
+    const identity = { provider: 'gitlab', instance: 'https://gitlab.example.com' } satisfies SourceControlIdentity;
+    expect(resolveSourceControlIdentity(remote('ssh://git@gitlab.example.com:22/team/repo.git'), [identity])).toBe(identity);
   });
 
   test('recognizes GitHub and rejects unknown hosts', () => {

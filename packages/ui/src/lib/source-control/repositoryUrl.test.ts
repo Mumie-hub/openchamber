@@ -1,3 +1,4 @@
+successfully downloaded text file (SHA: 5332a66ac68d93801151ace161495fa9259b7b45)
 import { expect, test } from 'bun:test';
 import type { GitRemote, SourceControlIdentity } from '@/lib/api/types';
 import { defaultSourceControlIdentities } from './identity';
@@ -29,6 +30,11 @@ test('known self-hosted GitLab instances use their configured browser base', () 
   expect(link('git@code.example.com:group/sub/project.git', identities)).toEqual({ provider: 'gitlab', url: 'https://code.example.com/group/sub/project' });
   expect(link('https://code.example.com/group/sub/project.git', identities)).toEqual({ provider: 'gitlab', url: 'https://code.example.com/group/sub/project' });
   expect(link('git@code.example.com:group/sub/project.git')).toBeNull();
+});
+
+test('self-hosted GitLab with custom SSH port produces web links', () => {
+  const identities: SourceControlIdentity[] = [{ provider: 'gitlab', instance: 'https://code.example.com' }];
+  expect(link('ssh://git@code.example.com:2222/group/sub/project.git', identities)).toEqual({ provider: 'gitlab', url: 'https://code.example.com/group/sub/project' });
 });
 
 test('configured instance ports and path prefixes are retained', () => {

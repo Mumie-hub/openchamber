@@ -1,3 +1,4 @@
+successfully downloaded text file (SHA: ce6a7f2492a7a0ea1098e9af9f38fd794737bf30)
 import type { SourceControlProviderDescriptor } from './providers/descriptor';
 import type { GitRemote, PageResult, SourceControlAuthAccount, SourceControlBindingRead, SourceControlIdentity, SourceControlReadContext } from '@/lib/api/types';
 
@@ -148,11 +149,17 @@ export const resolveSourceControlTarget = (
     const authority = getRemoteAuthority(remote);
     if (!authority) continue;
     const traits = remoteTraits(remote.pushUrl?.trim() || remote.fetchUrl?.trim() || '');
-    const identity = identities.find((candidate) => {
+    const matches = identities.filter((candidate) => {
       if (getIdentityAuthority(candidate) === authority) return true;
       const ssh = candidate.instanceSshUrl && traits.ssh ? sshInstanceTraits(candidate.instanceSshUrl) : null;
-      return ssh !== null && ssh.host === traits.host?.replace(/\.$/, '') && ssh.port === traits.sshPort;
+      if (ssh !== null) return ssh.host === traits.host?.replace(/\.$/, '') && ssh.port === traits.sshPort;
+      if (traits.ssh && !candidate.instanceSshUrl) {
+        return instanceHost(candidate.instance) === traits.host?.replace(/\.$/, '');
+      }
+      return false;
     });
+    const identity = matches.find((candidate) => getIdentityAuthority(candidate) === authority)
+      ?? (matches.length === 1 ? matches[0] : null);
     if (identity) targets.push({ identity, remote });
   }
   return targets.length === 1 ? targets[0] : null;
